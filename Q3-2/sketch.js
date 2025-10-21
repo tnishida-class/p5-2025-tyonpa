@@ -1,14 +1,17 @@
 // 2D アニメーションゲームのようなインタラクション
 let x, y;
 let vx, vy;
-const g = 1;
+let is_jump, jump_height;
+const g = 5;
 
 function setup(){
   createCanvas(windowWidth, windowHeight);
   x = width / 2;
   y = height / 2;
+  jump_height = height /2
   vx = 0;
   vy = 0;
+  is_jump = false;
 }
 
 function windowResized(){
@@ -25,8 +28,31 @@ function draw(){
   rect(0, groundY, width, height - groundY);
 
   // BLANK[1] キャラクターの左右移動
+  if(keyIsDown("S".charCodeAt(0))) {
+    speed_up = 5;
+  } else {
+    speed_up = 0;
+  }
+  
+  if(keyIsDown(RIGHT_ARROW)){ x += (5 + speed_up); }
+  if(keyIsDown(LEFT_ARROW)){ x -= (5 + speed_up); }
 
   // BLANK[2] 重力とジャンプ
+  if (!is_jump) {
+    if (y <= groundY - size * 0.5) {
+      vy += g
+    } else {
+      vy = 0
+      // jump処理 
+      if (keyIsDown(" ".charCodeAt(0))) {
+        is_jump = true;
+        vy -= 20;
+      }
+    }
+  // jumpしている間は重力を無視
+  } else if (y <= jump_height) {
+    is_jump = false;
+  }
 
   // 速くなりすぎないように制限
   vx = constrain(vx, -20, 20);
